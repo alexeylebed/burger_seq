@@ -1,0 +1,211 @@
+<style>
+    body{
+        font-family: 'Raleway', sans-serif;  
+        margin: 0;
+        padding: 0;
+    }
+
+    header{
+        width: 100%;
+        height: 200px;
+        background-color: #006CCE;
+    }
+    a{
+        text-decoration: none;
+    }
+    .progname{
+        width: 100%;
+        text-align: center;
+        text-transform: uppercase;
+        padding-top: 90px;
+        font-size: 28px;
+        color: white;
+    }
+    .container{
+        width: 960px;
+        margin:auto;
+        font-size: 24px;
+    }
+
+    .statheader{
+        margin: 40px 0 40px 0;
+        text-align: center;
+        font-size: 30px;
+        color: #607D8B;
+    }
+
+    #buttonParent{
+        display:flex;
+        justify-content: center;
+    }
+    #addBurger{
+        height: 50px;
+        width: 300px;
+        border-radius: 5px;
+        color: white;
+        text-transform: uppercase;
+        background-color: #006CCE;
+        margin: 30px 0 20px 0;
+        outline: none;
+        font-size: 20px;
+    }
+    .inputparent{
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .input{
+        display: block;
+        outline: none;
+        border: none;
+        height: 60px;
+        width: 600px;
+        border-bottom: 1px solid #006CCE;
+        font-family: 'Raleway', sans-serif;  
+        font-size: 24px;
+    }
+
+    .input::placeholder{
+        font-family: 'Raleway', sans-serif;  
+        font-size: 24px;
+    }
+
+    .input:focus{
+        font-family: 'Raleway', sans-serif;  
+        font-size: 24px;
+        border-bottom: 2px solid #006CCE;
+    }
+    .burgersListsParent{
+        display: flex;
+        justify-content: space-between;
+    }
+    #toDevour , #devoured{
+        width: 47%;
+        
+    }
+    .toDevour__header,  .devoured__header{
+        padding-bottom: 10px;
+        border-bottom: 1px solid #006CCE;
+        font-size: 24px;
+        color: grey;
+        margin: 20px 0 20px 0;
+        text-align: center;
+    }
+    .burgersToDevoureParent{
+        display: flex;
+        justify-content: space-between;
+    }
+    .devourIt{
+        height: 20px;
+        width: 70px;
+        font-size: 12px;
+        border-radius: 3px;
+        color: white;
+        text-transform: uppercase;
+        background-color: #006CCE;
+        margin: 10px;
+        outline: none;
+    }
+
+</style>
+<header>
+    <div class="progname">
+        Eat-Da-Burger <br>
+        Welcome to a burger reservation webpage!
+    </div>
+</header>
+<div class = "container">
+    <section class=newReservation>
+        {{!-- <div class='statheader'>Welcome to a burger reservation webpage!</div> --}}
+        <div class = 'inputparent'>
+            <input type="text" id="burgerInput" class = 'input' placeholder = "Describe burger you want yo eat">
+        </div>
+        <div id = 'buttonParent'>
+            <button id = 'addBurger'>Order a burger</button>
+        </div>
+    </section>           
+</div>
+<div class = 'container'>
+    <div class = 'burgersListsParent'>
+        <div id = 'toDevour'>
+            <div class = 'toDevour__header'>Burgers to devour</div>
+            {{#each burgersToDevour }}
+                <div class  ='burgersToDevoureParent'>
+                    <div class = 'burger'>{{burger}}</div>
+                    <button class = 'devourIt' id = {{id}} >devour it!</button>
+                </div>
+            {{/each}}
+        </div>
+        <div id = 'devoured'>
+            <div class = 'devoured__header'>Devoured burgers</div>
+            {{#each devouredBurgers }}
+                <div class  ='burgersToDevoureParent'>
+                    <div class = 'burger'>{{burger}}</div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<script>
+    var input  = document.getElementById('burgerInput');
+    var addBurgerButton = document.getElementById('addBurger');
+    var devour = document.getElementsByClassName('devourIt');
+    var baseURL = window.location.protocol + "//" + window.location.host + "/";
+
+
+
+    addBurgerButton.addEventListener('click', (event) => {
+        var data = {
+            burger: input.value
+        }
+        data = JSON.stringify(data);
+        input.value = '';
+
+        fetch(baseURL + 'addburger', {
+            method: 'POST',
+            body: data,
+            headers: {  
+               "content-type" : "application/json"
+            }
+        }).then((result) =>{
+            return result.text();
+        }).then((text) => {
+            console.log(JSON.parse(text));
+            location.reload();
+        }).catch((err) =>{
+            console.log(err);
+        });
+    });
+
+    [...devour].forEach((item) =>{
+        item.addEventListener('click', (event) =>{
+            console.log(event.target.id);
+
+            var burgerToDevour ={
+                id: event.target.id
+            };
+
+            burgerToDevour = JSON.stringify(burgerToDevour);
+
+            fetch(baseURL + 'devour', {
+                method: 'POST',
+                body: burgerToDevour,
+                headers: {  
+                "content-type" : "application/json"
+                }
+            }).then((result) =>{
+                return result.text();
+            }).then((text) => {
+                console.log(JSON.parse(text));
+                location.reload();
+            }).catch((err) =>{
+                console.log(err);
+            });
+        });
+    });
+   
+
+</script>
+
+
